@@ -1,0 +1,14 @@
+.homePageLayout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+}
+
+.mainContent {
+  padding: 0 2rem;
+}
+
+.mainContent h1 {
+  text-align: left;
+  margin-bottom: 1rem;
+}
