@@ -1,0 +1,16 @@
+.searchContainer {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.searchContainer h4 {
+  margin-bottom: 0.5rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+}

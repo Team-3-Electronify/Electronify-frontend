@@ -1,0 +1,34 @@
+.filterContainer {
+  text-align: left;
+}
+
+.filterContainer h4 {
+  margin-bottom: 0.5rem;
+}
+
+.filterButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.filterContainer button {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.filterContainer button:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.filterContainer button.active {
+  background-color: var(--primary-color);
+  color: white;
+}
