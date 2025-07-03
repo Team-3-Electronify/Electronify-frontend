@@ -10,13 +10,17 @@ const Sidebar = ({
   onSelectCategory,
   selectedCategory,
   onSearchChange,
+  searchTerm,
   onPriceChange,
   selectedPriceRange,
   onSortChange,
 }) => {
   return (
     <aside className={styles.sidebar}>
-      <SearchFilter onSearchChange={onSearchChange} />
+      <SearchFilter 
+        onSearchChange={onSearchChange} 
+        searchTerm={searchTerm}
+      />
       <SortFilter onSortChange={onSortChange} />
       <PriceFilter
         onPriceChange={onPriceChange}

@@ -25,6 +25,19 @@
   margin-bottom: 0.5rem;
 }
 
+.rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.reviewCount {
+  font-size: 0.9rem;
+  color: #666;
+}
+
 .price {
   font-size: 1.1rem;
   font-weight: bold;
