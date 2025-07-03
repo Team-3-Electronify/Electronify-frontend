@@ -63,20 +63,47 @@ const filterProductsLocally = (products, filters) => {
     
     const range = priceRanges[filters.priceGroup];
     if (range) {
-      filtered = filtered.filter(p => 
-        p.price !== undefined && p.price >= range.min && p.price < range.max
-      );
+      filtered = filtered.filter(p => {
+        const price = parseFloat(p.price);
+        if (isNaN(price)) return false;
+        
+        if (filters.priceGroup === 'Less than 50€') {
+          return price < range.max;
+        }
+        else if (filters.priceGroup === 'More than 900€') {
+          return price >= range.min;
+        }
+        else {
+          return price >= range.min && price < range.max;
+        }
+      });
     }
   }
 
   if (filters.sortByPrice === 'asc') {
-    filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+    filtered.sort((a, b) => {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      return priceA - priceB;
+    });
   } else if (filters.sortByPrice === 'desc') {
-    filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+    filtered.sort((a, b) => {
+      const priceA = parseFloat(a.price) || 0;
+      const priceB = parseFloat(b.price) || 0;
+      return priceB - priceA;
+    });
   } else if (filters.sortByRating === 'asc') {
-    filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+    filtered.sort((a, b) => {
+      const ratingA = parseFloat(a.rating) || 0;
+      const ratingB = parseFloat(b.rating) || 0;
+      return ratingA - ratingB;
+    });
   } else if (filters.sortByRating === 'desc') {
-    filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    filtered.sort((a, b) => {
+      const ratingA = parseFloat(a.rating) || 0;
+      const ratingB = parseFloat(b.rating) || 0;
+      return ratingB - ratingA;
+    });
   }
 
   return filtered;
@@ -169,26 +196,22 @@ const HomePage = () => {
       let data = [];
       
       if (usingFallback) {
-
-        console.log('Using local filtering with params:', filterParams);
         data = Object.keys(filterParams).length > 0 
           ? filterProductsLocally(fallbackProducts, filterParams)
           : fallbackProducts;
-        
-        console.log('Local filtering result:', data.length, 'products');
       } else {
 
         try {
-          console.log('Trying API with params:', filterParams);
           data = Object.keys(filterParams).length > 0 
             ? await productsAPI.getFilteredProducts(filterParams)
             : await productsAPI.getAllProducts();
           
-          console.log('API result:', data ? data.length : 0, 'products');
-          
-
           if (!Array.isArray(data)) {
             data = [];
+          }
+          
+          if (Object.keys(filterParams).length > 0) {
+            data = filterProductsLocally(data, filterParams);
           }
           
         } catch (apiError) {

@@ -127,7 +127,39 @@ export const productsAPI = {
   getAllProducts: async () => {
     try {
       const result = await apiRequest('/api/products');
-      return Array.isArray(result) ? result : [];
+      const products = Array.isArray(result) ? result : [];
+      
+      const productsWithReviewCount = [];
+      const batchSize = 3;
+      
+      for (let i = 0; i < products.length; i += batchSize) {
+        const batch = products.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+          batch.map(async (product) => {
+            try {
+              const reviews = await reviewsAPI.getReviewsByProduct(product.id);
+              const reviewCount = reviews.length;
+              const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+              const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+              
+              return {
+                ...product,
+                reviewCount,
+                rating: averageRating || product.rating || 0
+              };
+            } catch (error) {
+              return {
+                ...product,
+                reviewCount: product.reviewCount || 0,
+                rating: product.rating || 0
+              };
+            }
+          })
+        );
+        productsWithReviewCount.push(...batchResults);
+      }
+      
+      return productsWithReviewCount;
     } catch (error) {
       console.error('Failed to get all products:', error);
       throw error;
@@ -161,14 +193,44 @@ export const productsAPI = {
       params.append('sortByRating', filters.sortByRating);
     }
 
-    const queryString = params.toString();
+        const queryString = params.toString();
     const endpoint = queryString ? `/api/products/filter?${queryString}` : '/api/products/filter';
     
-    console.log('API Request URL:', `${BASE_URL}${endpoint}`);
-    
-    try {
-      const result = await apiRequest(endpoint);
-      return Array.isArray(result) ? result : [];
+          try {
+        const result = await apiRequest(endpoint);
+        const products = Array.isArray(result) ? result : [];
+        
+        const productsWithReviewCount = [];
+        const batchSize = 3;
+        
+        for (let i = 0; i < products.length; i += batchSize) {
+          const batch = products.slice(i, i + batchSize);
+          const batchResults = await Promise.all(
+            batch.map(async (product) => {
+              try {
+                const reviews = await reviewsAPI.getReviewsByProduct(product.id);
+                const reviewCount = reviews.length;
+                const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+                const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+                
+                return {
+                  ...product,
+                  reviewCount,
+                  rating: averageRating || product.rating || 0
+                };
+              } catch (error) {
+                return {
+                  ...product,
+                  reviewCount: product.reviewCount || 0,
+                  rating: product.rating || 0
+                };
+              }
+            })
+          );
+          productsWithReviewCount.push(...batchResults);
+        }
+        
+        return productsWithReviewCount;
     } catch (error) {
       console.error('Failed to get filtered products:', error);
       throw error;

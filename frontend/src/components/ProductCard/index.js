@@ -11,6 +11,9 @@ const ProductCard = ({ product }) => {
         <h3 className={styles.name}>{product.name}</h3>
         <div className={styles.rating}>
           <StarRating rating={product.rating} />
+          <span className={styles.ratingValue}>
+            {product.rating ? product.rating.toFixed(1) : '0.0'}
+          </span>
           <span className={styles.reviewCount}>({product.reviewCount || 0})</span>
         </div>
         <p className={styles.price}>${product.price.toFixed(2)}</p>
