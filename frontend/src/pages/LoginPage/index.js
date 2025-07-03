@@ -1,96 +1,221 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authAPI } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './styles.module.css';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   
-  const { login, isLoading, error, setLoadingState, setErrorState, clearError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
-  const handleInputChange = (e) => {
+  const fromState = location.state;
+  const successMessage = fromState?.message;
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    if (error) clearError();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.username || !formData.password) {
-      setErrorState('Please fill in all fields');
-      return;
-    }
-
-    setLoadingState(true);
-    clearError();
+    setIsLoading(true);
+    setError('');
 
     try {
-      const response = await authAPI.login(formData);
+      const response = await authAPI.login({
+        username: formData.username,
+        password: formData.password,
+      });
+
+      let userData = null;
+      let token = null;
+
+      if (response.user && response.token) {
+        userData = response.user;
+        token = response.token;
+      } 
+      else if (response.user && response.accessToken) {
+        userData = response.user;
+        token = response.accessToken;
+      }
+      else if (response.user && response.auth_token) {
+        userData = response.user;
+        token = response.auth_token;
+      }
+      else if (response.token && (response.id || response.username)) {
+        userData = {
+          id: response.id,
+          username: response.username || formData.username,
+          email: response.email,
+          name: response.name
+        };
+        token = response.token;
+      } 
+      else if (response.accessToken && (response.id || response.username)) {
+        userData = {
+          id: response.id,
+          username: response.username || formData.username,
+          email: response.email,
+          name: response.name
+        };
+        token = response.accessToken;
+      }
+      else if (response.token) {
+        userData = {
+          username: formData.username,
+          email: response.email || ''
+        };
+        token = response.token;
+      } 
+      else if (response.accessToken) {
+        userData = {
+          username: formData.username,
+          email: response.email || ''
+        };
+        token = response.accessToken;
+      }
+      else if (response.user) {
+        userData = response.user;
+        token = null;
+      } 
+      else if (response.username && response.token) {
+        userData = response;
+        token = response.token;
+      }
+      else {
+        const possibleTokenFields = ['token', 'accessToken', 'access_token', 'authToken', 'auth_token', 'jwt', 'bearerToken'];
+        for (const field of possibleTokenFields) {
+          if (response[field]) {
+            token = response[field];
+            break;
+          }
+        }
+
+        if (response.username || response.email || response.id) {
+          userData = {
+            id: response.id,
+            username: response.username || formData.username,
+            email: response.email,
+            name: response.name || response.displayName || response.fullName
+          };
+        } else {
+          userData = {
+            username: formData.username,
+            email: response.email || ''
+          };
+        }
+      }
+
+      if (!token) {
+        const possibleTokenKeys = ['token', 'authToken', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
+        for (const key of possibleTokenKeys) {
+          const storedToken = localStorage.getItem(key);
+          if (storedToken) {
+            token = storedToken;
+            break;
+          }
+        }
+      }
+
+      if (!userData) {
+        throw new Error('No user data could be extracted from server response');
+      }
+
+      await login(userData, token, {
+        username: formData.username,
+        password: formData.password
+      });
+
+      if (fromState?.from && fromState.from !== '/login') {
+        navigate(fromState.from, { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
       
-      await login(response.user, response.token);
-      
-      navigate('/');
-    } catch (error) {
-      setErrorState(error.message || 'Login error');
+    } catch (err) {
+      console.error('❌ LoginPage: Login error:', err);
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
-      setLoadingState(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className={styles['form-container']}>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <h1>Login</h1>
+    <div className={styles.container}>
+      <div className={styles.loginForm}>
+        <h2>Login to Your Account</h2>
         
-        {error && (
-          <div className={styles.error}>
-            {error}
+        {successMessage && (
+          <div className={styles.successMessage}>
+            {successMessage}
           </div>
         )}
         
-        <div className={styles['form-group']}>
-          <label htmlFor="username">Username</label>
-          <input 
-            type="text" 
-            id="username" 
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            disabled={isLoading}
-            required
-          />
-        </div>
+        {fromState?.productName && (
+          <div className={styles.returnInfo}>
+            You'll be returned to <strong>{fromState.productName}</strong> after login
+          </div>
+        )}
         
-        <div className={styles['form-group']}>
-          <label htmlFor="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            disabled={isLoading}
-            required
-          />
-        </div>
+        {error && <div className={styles.error}>{error}</div>}
         
-        <button 
-          type="submit" 
-          className={styles.button}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label htmlFor="username">Username:</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div className={styles.formGroup}>
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className={styles.submitButton}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        
+        <div className={styles.links}>
+          <Link 
+            to="/register" 
+            state={fromState}
+            className={styles.link}
+          >
+            Don't have an account? Register here
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

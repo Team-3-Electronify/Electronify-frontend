@@ -1,47 +1,180 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { products as mockProducts } from '../../data/products';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { productsAPI, reviewsAPI } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './styles.module.css';
 import ReviewForm from '../../components/ReviewForm';
 import StarRating from '../../components/StarRating';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const { user, logout, isInitialized } = useAuth();
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
-    const foundProduct = mockProducts.find((p) => p.id === parseInt(id));
-    setProduct(foundProduct);
-  }, [id]);
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const productData = await productsAPI.getProductById(id);
+        setProduct(productData);
+      } catch (err) {
+        setError(err.message || 'Failed to load product');
+        console.error('Error loading product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleReviewSubmit = (newReview) => {
-    setProduct((prevProduct) => {
-      const newReviewCount = prevProduct.reviewCount + 1;
-      const newTotalRating = (prevProduct.rating * prevProduct.reviewCount) + newReview.rating;
-      const newAverageRating = newTotalRating / newReviewCount;
+    const loadReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        setReviewsError(null);
+        const reviewsData = await reviewsAPI.getReviewsByProduct(id);
+        
+        const reviewsWithAuthor = (reviewsData || []).map(review => ({
+          ...review,
+          author: review.authorName || review.author || 'Anonymous User'
+        }));
+        
+        setReviews(reviewsWithAuthor);
+      } catch (err) {
+        setReviewsError(err.message || 'Failed to load reviews');
+        console.error('Error loading reviews:', err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
 
-      return {
-        ...prevProduct,
-        reviews: [
-          ...prevProduct.reviews,
-          {
-            id: prevProduct.reviews.length + 100, // mock new id
-            ...newReview,
-          },
-        ],
-        reviewCount: newReviewCount,
-        rating: newAverageRating,
+    if (id && isInitialized) {
+      loadProduct();
+      loadReviews();
+    }
+  }, [id, isInitialized]);
+
+  useEffect(() => {
+    if (submitSuccess) {
+      const timer = setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [submitSuccess]);
+
+  const handleReviewSubmit = async (newReview) => {
+    if (!user) {
+      setSubmitError('Please login to submit a review');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      setSubmitError(null);
+      setSubmitSuccess(false);
+      
+      const reviewData = {
+        rating: newReview.rating,
+        body: newReview.comment,
+        productId: parseInt(id),
+        userId: user.id
       };
-    });
+
+      const createdReview = await reviewsAPI.createReview(reviewData);
+      
+      const reviewWithUser = {
+        ...createdReview,
+        author: user.username || user.name || user.email || 'Anonymous',
+        authorName: user.username || user.name || user.email || 'Anonymous',
+        comment: createdReview.body || createdReview.comment
+      };
+      
+      setReviews(prevReviews => [...prevReviews, reviewWithUser]);
+      
+      setProduct(prevProduct => {
+        const allReviews = [...reviews, reviewWithUser];
+        const newReviewCount = allReviews.length;
+        const totalRating = allReviews.reduce((sum, review) => sum + review.rating, 0);
+        const newAverageRating = newReviewCount > 0 ? totalRating / newReviewCount : 0;
+
+        return {
+          ...prevProduct,
+          reviewCount: newReviewCount,
+          rating: newAverageRating,
+        };
+      });
+      
+      setSubmitSuccess(true);
+      
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      
+      if (err.message.includes('login')) {
+        logout();
+        setSubmitError('Your session has expired. Please login again to submit a review.');
+      } else {
+        setSubmitError(err.message || 'Failed to submit review. Please try again.');
+      }
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
-  if (!product) {
-    return <div>Product not found</div>;
+  const actualReviewCount = reviews.length;
+  const actualRating = reviews.length > 0 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+    : (product?.rating || 0);
+
+  if (!isInitialized || loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <p>Loading product...</p>
+        </div>
+      </div>
+    );
   }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.errorContainer}>
+          <p>Error: {error}</p>
+          <Link to="/" className={styles.backLink}>← Back to Products</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.errorContainer}>
+          <p>Product not found</p>
+          <Link to="/" className={styles.backLink}>← Back to Products</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const returnToProductState = {
+    from: location.pathname,
+    productId: id,
+    productName: product.name
+  };
 
   return (
     <div className={styles.container}>
       <Link to="/" className={styles.backLink}>&larr; Back to Products</Link>
+      
       <div className={styles.productDetail}>
         <div className={styles.imageContainer}>
           <img src={product.imageUrl} alt={product.name} className={styles.image} />
@@ -50,32 +183,73 @@ const ProductDetailPage = () => {
           <h1 className={styles.name}>{product.name}</h1>
           <p className={styles.category}>{product.category.name}</p>
           <div className={styles.rating}>
-            <StarRating rating={product.rating} />
-            <span className={styles.reviewCount}>({product.reviewCount} reviews)</span>
+            <StarRating rating={actualRating} />
+            <span className={styles.reviewCount}>({actualReviewCount} reviews)</span>
           </div>
+          {product.description && (
+            <p className={styles.description}>{product.description}</p>
+          )}
           <p className={styles.price}>${product.price.toFixed(2)}</p>
           <button className={styles.button}>Add to Cart</button>
         </div>
       </div>
 
       <div className={styles.reviewsSection}>
-        <h2>Customer Reviews</h2>
-        {product.reviews.length > 0 ? (
+        <h2>Customer Reviews ({actualReviewCount})</h2>
+        {reviewsLoading ? (
+          <p>Loading reviews...</p>
+        ) : reviewsError ? (
+          <p className={styles.error}>Error loading reviews: {reviewsError}</p>
+        ) : reviews && reviews.length > 0 ? (
           <ul className={styles.reviewList}>
-            {product.reviews.map((review) => (
-              <li key={review.id} className={styles.reviewItem}>
+            {reviews.map((review, index) => (
+              <li key={review.id || index} className={styles.reviewItem}>
                 <div className={styles.reviewHeader}>
-                  <strong>{review.author}</strong>
+                  <strong>{review.author || review.authorName || 'Anonymous User'}</strong>
                   <StarRating rating={review.rating} />
                 </div>
-                <p>{review.comment}</p>
+                <p>{review.comment || review.body}</p>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No reviews yet.</p>
+          <p>No reviews yet. Be the first to review this product!</p>
         )}
-        <ReviewForm onSubmit={handleReviewSubmit} />
+        
+        {user ? (
+          <div>
+            {submitError && (
+              <div className={styles.submitError}>
+                {submitError}
+              </div>
+            )}
+            {submitSuccess && (
+              <div className={styles.submitSuccess}>
+                ✓ Review submitted successfully! Thank you for your feedback.
+              </div>
+            )}
+            {submittingReview && (
+              <div className={styles.submittingIndicator}>
+                Submitting your review...
+              </div>
+            )}
+            <ReviewForm onSubmit={handleReviewSubmit} disabled={submittingReview} />
+          </div>
+        ) : (
+          <p className={styles.loginPrompt}>
+            <Link 
+              to="/login" 
+              state={returnToProductState}
+            >
+              Login
+            </Link> or <Link 
+              to="/register" 
+              state={returnToProductState}
+            >
+              Register
+            </Link> to write a review
+          </p>
+        )}
       </div>
     </div>
   );
