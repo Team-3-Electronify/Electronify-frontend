@@ -33,6 +33,13 @@
   margin-bottom: 0.5rem;
 }
 
+.ratingValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-left: 0.25rem;
+}
+
 .reviewCount {
   font-size: 0.9rem;
   color: #666;

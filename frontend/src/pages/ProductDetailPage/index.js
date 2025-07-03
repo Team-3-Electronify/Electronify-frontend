@@ -184,6 +184,9 @@ const ProductDetailPage = () => {
           <p className={styles.category}>{product.category.name}</p>
           <div className={styles.rating}>
             <StarRating rating={actualRating} />
+            <span className={styles.ratingValue}>
+              {actualRating ? actualRating.toFixed(1) : '0.0'}
+            </span>
             <span className={styles.reviewCount}>({actualReviewCount} reviews)</span>
           </div>
           {product.description && (
