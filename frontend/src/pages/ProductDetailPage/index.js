@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { productsAPI, reviewsAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
 import styles from './styles.module.css';
 import ReviewForm from '../../components/ReviewForm';
 import StarRating from '../../components/StarRating';
@@ -9,7 +10,9 @@ import StarRating from '../../components/StarRating';
 const ProductDetailPage = () => {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout, isInitialized } = useAuth();
+  const { addToCart, isInCart, getProductQuantity } = useCart();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +22,7 @@ const ProductDetailPage = () => {
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [addToCartSuccess, setAddToCartSuccess] = useState(false);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -69,6 +73,25 @@ const ProductDetailPage = () => {
       return () => clearTimeout(timer);
     }
   }, [submitSuccess]);
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+    
+    try {
+      await addToCart(product);
+      setAddToCartSuccess(true);
+      
+      setTimeout(() => {
+        setAddToCartSuccess(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+
+  const handleGoToCart = () => {
+    navigate('/cart');
+  };
 
   const handleReviewSubmit = async (newReview) => {
     if (!user) {
@@ -193,7 +216,35 @@ const ProductDetailPage = () => {
             <p className={styles.description}>{product.description}</p>
           )}
           <p className={styles.price}>${product.price.toFixed(2)}</p>
-          <button className={styles.button}>Add to Cart</button>
+          <div className={styles.cartSection}>
+            <div className={styles.buttonGroup}>
+              <button 
+                className={styles.button}
+                onClick={handleAddToCart}
+                disabled={!product}
+              >
+                {isInCart(product?.id) ? 'Add More' : 'Add to Cart'}
+              </button>
+              {isInCart(product?.id) && (
+                <button 
+                  className={styles.cartButton}
+                  onClick={handleGoToCart}
+                >
+                  Go to Cart
+                </button>
+              )}
+            </div>
+            {isInCart(product?.id) && (
+              <span className={styles.cartInfo}>
+                In cart: {getProductQuantity(product?.id)}
+              </span>
+            )}
+            {addToCartSuccess && (
+              <span className={styles.successMessage}>
+                ✓ Added to cart!
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

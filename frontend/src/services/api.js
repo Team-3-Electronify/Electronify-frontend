@@ -301,4 +301,207 @@ export const reviewsAPI = {
   },
 };
 
+export const cartAPI = {
+  getCart: async () => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error('Authentication required');
+      }
+      
+      return await apiRequest('/api/cart');
+    } catch (error) {
+      console.error('Failed to get cart:', error);
+      throw error;
+    }
+  },
+
+  addToCart: async (productId, quantity = 1) => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error('Authentication required');
+      }
+      
+      const token = getAuthToken();
+      
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        if (token.startsWith('Basic ')) {
+          headers['Authorization'] = token;
+        } else {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
+      const response = await fetch(`${BASE_URL}/api/cart/add`, {
+        method: 'POST',
+        headers: headers,
+        credentials: 'include',
+        body: JSON.stringify({
+          productId: productId,
+          quantity: quantity
+        })
+      });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('userData');
+        throw new Error('Authentication failed. Please login again.');
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+      
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      throw error;
+    }
+  },
+
+  updateCartItem: async (productId, quantity) => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error('Authentication required');
+      }
+      
+      const token = getAuthToken();
+      
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        if (token.startsWith('Basic ')) {
+          headers['Authorization'] = token;
+        } else {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
+      const response = await fetch(`${BASE_URL}/api/cart/update`, {
+        method: 'PUT',
+        headers: headers,
+        credentials: 'include',
+        body: JSON.stringify({
+          productId: productId,
+          quantity: quantity
+        })
+      });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('userData');
+        throw new Error('Authentication failed. Please login again.');
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+      
+    } catch (error) {
+      console.error('Failed to update cart item:', error);
+      throw error;
+    }
+  },
+
+  removeFromCart: async (productId) => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error('Authentication required');
+      }
+      
+      const token = getAuthToken();
+      
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        if (token.startsWith('Basic ')) {
+          headers['Authorization'] = token;
+        } else {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
+      const response = await fetch(`${BASE_URL}/api/cart/remove`, {
+        method: 'DELETE',
+        headers: headers,
+        credentials: 'include',
+        body: JSON.stringify({
+          productId: productId
+        })
+      });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('userData');
+        throw new Error('Authentication failed. Please login again.');
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+      
+    } catch (error) {
+      console.error('Failed to remove from cart:', error);
+      throw error;
+    }
+  },
+
+  clearCart: async () => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (!userData) {
+        throw new Error('Authentication required');
+      }
+      
+      const token = getAuthToken();
+      
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        if (token.startsWith('Basic ')) {
+          headers['Authorization'] = token;
+        } else {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
+      const response = await fetch(`${BASE_URL}/api/cart/clear`, {
+        method: 'DELETE',
+        headers: headers,
+        credentials: 'include'
+      });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('userData');
+        throw new Error('Authentication failed. Please login again.');
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+      
+    } catch (error) {
+      console.error('Failed to clear cart:', error);
+      throw error;
+    }
+  },
+};
+
 export default apiRequest; 

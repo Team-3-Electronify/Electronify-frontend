@@ -76,6 +76,9 @@ export const AuthProvider = ({ children }) => {
     
     setUser(userData);
     setError(null);
+    
+
+    window.dispatchEvent(new CustomEvent('authChange'));
   };
 
   const logout = () => {
@@ -87,6 +90,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('basicAuth');
     
     setError(null);
+    
+    window.dispatchEvent(new CustomEvent('authChange'));
   };
 
   const setLoadingState = (loading) => {

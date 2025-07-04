@@ -137,7 +137,11 @@ const LoginPage = () => {
         password: formData.password
       });
 
-      if (fromState?.from && fromState.from !== '/login') {
+      const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectAfterLogin) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectAfterLogin, { replace: true });
+      } else if (fromState?.from && fromState.from !== '/login') {
         navigate(fromState.from, { replace: true });
       } else {
         navigate('/', { replace: true });

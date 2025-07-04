@@ -92,6 +92,60 @@
   background-color: var(--border-color);
 }
 
+.cartButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1.1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cartButton:hover {
+  background-color: #218838;
+}
+
+.cartSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cartInfo {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.successMessage {
+  color: #28a745;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .reviewsSection {
   text-align: left;
 }
