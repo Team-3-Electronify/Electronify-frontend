@@ -53,7 +53,7 @@ const ProductDetailPage = () => {
         setReviews(reviewsWithAuthor);
       } catch (err) {
         setReviewsError(err.message || 'Failed to load reviews');
-        console.error('Error loading reviews:', err);
+
       } finally {
         setReviewsLoading(false);
       }
@@ -142,7 +142,7 @@ const ProductDetailPage = () => {
       setSubmitSuccess(true);
       
     } catch (err) {
-      console.error('Error submitting review:', err);
+
       
       if (err.message.includes('login')) {
         logout();

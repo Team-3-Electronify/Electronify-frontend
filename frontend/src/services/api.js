@@ -30,7 +30,7 @@ const apiRequest = async (endpoint, options = {}) => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),   
+      ...(token && { 'Authorization': token.startsWith('Basic ') ? token : `Bearer ${token}` }),   
       ...options.headers,
     },
     credentials: 'include',
@@ -44,6 +44,7 @@ const apiRequest = async (endpoint, options = {}) => {
       const possibleTokenKeys = ['authToken', 'token', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
       possibleTokenKeys.forEach(key => localStorage.removeItem(key));
       localStorage.removeItem('userData');
+      localStorage.removeItem('basicAuth');
       
       throw new Error('Please login to perform this action');
     }
@@ -248,7 +249,7 @@ export const reviewsAPI = {
       const result = await apiRequest(`/api/reviews/byProduct?productId=${encodeURIComponent(productId)}`);
       return Array.isArray(result) ? result : [];
     } catch (error) {
-      console.error('Failed to get reviews:', error);
+
       return [];
     }
   },
@@ -288,6 +289,9 @@ export const reviewsAPI = {
       
       if (response.status === 401) {  
         localStorage.removeItem('userData');
+        localStorage.removeItem('basicAuth');
+        const possibleTokenKeys = ['authToken', 'token', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
+        possibleTokenKeys.forEach(key => localStorage.removeItem(key));
         throw new Error('Authentication failed. Please login again.');
       }
       
@@ -299,7 +303,7 @@ export const reviewsAPI = {
       return result;
       
     } catch (error) {
-      console.error('Review creation error:', error);
+
       throw error;
     }
   },
@@ -357,6 +361,9 @@ export const cartAPI = {
       
       if (response.status === 401) {
         localStorage.removeItem('userData');
+        localStorage.removeItem('basicAuth');
+        const possibleTokenKeys = ['authToken', 'token', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
+        possibleTokenKeys.forEach(key => localStorage.removeItem(key));
         throw new Error('Authentication failed. Please login again.');
       }
       
@@ -409,6 +416,9 @@ export const cartAPI = {
       
       if (response.status === 401) {
         localStorage.removeItem('userData');
+        localStorage.removeItem('basicAuth');
+        const possibleTokenKeys = ['authToken', 'token', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
+        possibleTokenKeys.forEach(key => localStorage.removeItem(key));
         throw new Error('Authentication failed. Please login again.');
       }
       
@@ -460,6 +470,9 @@ export const cartAPI = {
       
       if (response.status === 401) {
         localStorage.removeItem('userData');
+        localStorage.removeItem('basicAuth');
+        const possibleTokenKeys = ['authToken', 'token', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
+        possibleTokenKeys.forEach(key => localStorage.removeItem(key));
         throw new Error('Authentication failed. Please login again.');
       }
       
@@ -508,6 +521,9 @@ export const cartAPI = {
       
       if (response.status === 401) {
         localStorage.removeItem('userData');
+        localStorage.removeItem('basicAuth');
+        const possibleTokenKeys = ['authToken', 'token', 'accessToken', 'auth_token', 'jwt', 'bearerToken'];
+        possibleTokenKeys.forEach(key => localStorage.removeItem(key));
         throw new Error('Authentication failed. Please login again.');
       }
       

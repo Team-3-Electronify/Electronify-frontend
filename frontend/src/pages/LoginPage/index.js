@@ -38,6 +38,11 @@ const LoginPage = () => {
         password: formData.password,
       });
 
+
+      if (response.authenticated === false) {
+        throw new Error(response.message || 'Invalid username or password');
+      }
+
       let userData = null;
       let token = null;
 
@@ -148,7 +153,17 @@ const LoginPage = () => {
       }
       
     } catch (err) {
-      console.error('❌ LoginPage: Login error:', err);
+
+      const isAuthError = err.message && (
+        err.message.includes('Invalid username or password') ||
+        err.message.includes('Invalid credentials') ||
+        err.message.includes('Authentication failed')
+      );
+      
+      if (!isAuthError) {
+        console.error('LoginPage: Login error:', err);
+      }
+      
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
