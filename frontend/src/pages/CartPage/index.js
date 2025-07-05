@@ -10,8 +10,7 @@ const CartPage = () => {
     removeFromCart, 
     updateQuantity, 
     clearCart, 
-    getCartStats,
-    isOfflineMode 
+    getCartStats
   } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -70,12 +69,6 @@ const CartPage = () => {
   return (
     <div className={styles.container}>
       <h1>Your Cart</h1>
-      
-      {isOfflineMode && (
-        <div className={styles.offlineNotice}>
-          <p>⚠️ Working in offline mode - cart data is stored locally</p>
-        </div>
-      )}
       
       <div className={styles.cartContent}>
         <div className={styles.cartItems}>
