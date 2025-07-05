@@ -85,7 +85,11 @@ const ProductDetailPage = () => {
         setAddToCartSuccess(false);
       }, 2000);
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login to perform this action') && 
+          !error.message.includes('404')) {
+        console.error('Error adding to cart:', error);
+      }
     }
   };
 
@@ -215,7 +219,7 @@ const ProductDetailPage = () => {
           {product.description && (
             <p className={styles.description}>{product.description}</p>
           )}
-          <p className={styles.price}>${product.price.toFixed(2)}</p>
+          <p className={styles.price}>€{product.price.toFixed(2)}</p>
           <div className={styles.cartSection}>
             <div className={styles.buttonGroup}>
               <button 

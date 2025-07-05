@@ -81,7 +81,11 @@ const apiRequest = async (endpoint, options = {}) => {
       return [];
     }
     
-    console.error('API Request Error:', error);
+    if (!error.message.includes('Authentication required') && 
+        !error.message.includes('Please login') && 
+        !error.message.includes('404')) {
+      console.error('API Request Error:', error);
+    }
     throw error;
   }
 };
@@ -311,7 +315,11 @@ export const cartAPI = {
       
       return await apiRequest('/api/cart');
     } catch (error) {
-      console.error('Failed to get cart:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login') && 
+          !error.message.includes('404')) {
+        console.error('Failed to get cart:', error);
+      }
       throw error;
     }
   },
@@ -359,7 +367,11 @@ export const cartAPI = {
       return await response.json();
       
     } catch (error) {
-      console.error('Failed to add to cart:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login') && 
+          !error.message.includes('404')) {
+        console.error('Failed to add to cart:', error);
+      }
       throw error;
     }
   },
@@ -407,7 +419,11 @@ export const cartAPI = {
       return await response.json();
       
     } catch (error) {
-      console.error('Failed to update cart item:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login') && 
+          !error.message.includes('404')) {
+        console.error('Failed to update cart item:', error);
+      }
       throw error;
     }
   },
@@ -454,7 +470,11 @@ export const cartAPI = {
       return await response.json();
       
     } catch (error) {
-      console.error('Failed to remove from cart:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login') && 
+          !error.message.includes('404')) {
+        console.error('Failed to remove from cart:', error);
+      }
       throw error;
     }
   },
@@ -498,7 +518,11 @@ export const cartAPI = {
       return await response.json();
       
     } catch (error) {
-      console.error('Failed to clear cart:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login') && 
+          !error.message.includes('404')) {
+        console.error('Failed to clear cart:', error);
+      }
       throw error;
     }
   },

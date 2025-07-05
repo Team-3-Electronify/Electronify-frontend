@@ -15,6 +15,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -82,7 +83,8 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   const syncCartWithServer = useCallback(async (localCartItems) => {
-    if (!isAuthenticated || localCartItems.length === 0) return;
+    const userData = localStorage.getItem('userData');
+    if (!isAuthenticated || !userData || localCartItems.length === 0) return;
     
     try {
       setIsLoading(true);
@@ -97,7 +99,12 @@ export const CartProvider = ({ children }) => {
       const convertedItems = await convertServerCartToLocal(serverCart);
       setCartItems(convertedItems);
     } catch (error) {
-      console.error('Error syncing cart with server:', error);
+      if (!error.message.includes('Authentication required') && 
+          !error.message.includes('Please login to perform this action') && 
+          !error.message.includes('404')) {
+        console.error('Server cart sync failed, continuing with local cart:', error.message);
+      }
+      setCartItems(localCartItems);
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +112,8 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     const loadCart = async () => {
-      if (isAuthenticated) {
+      const userData = localStorage.getItem('userData');
+      if (isAuthenticated && userData) {
         const localCartItems = getLocalCartItems();
         
         try {
@@ -114,13 +122,26 @@ export const CartProvider = ({ children }) => {
           if (localCartItems.length > 0) {
             await syncCartWithServer(localCartItems);
           } else {
-            const serverCart = await cartAPI.getCart();
-            
-            const convertedItems = await convertServerCartToLocal(serverCart);
-            setCartItems(convertedItems);
+            try {
+              const serverCart = await cartAPI.getCart();
+              const convertedItems = await convertServerCartToLocal(serverCart);
+              setCartItems(convertedItems);
+            } catch (serverError) {
+              if (!serverError.message.includes('Authentication required') && 
+                  !serverError.message.includes('Please login to perform this action') && 
+                  !serverError.message.includes('404')) {
+                console.warn('Server cart unavailable, using local storage');
+              }
+              setIsOfflineMode(true);
+              loadLocalCart();
+            }
           }
         } catch (error) {
-          console.error('Error loading cart from server:', error);
+          if (!error.message.includes('Authentication required') && 
+              !error.message.includes('Please login to perform this action') && 
+              !error.message.includes('404')) {
+            console.warn('Cart sync failed, falling back to local storage:', error.message);
+          }
           loadLocalCart();
         } finally {
           setIsLoading(false);
@@ -183,15 +204,22 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   const addToCart = useCallback(async (product, quantity = 1) => {
-    if (isAuthenticated) {
+    const userData = localStorage.getItem('userData');
+    if (isAuthenticated && userData) {
       try {
         setIsLoading(true);
         const updatedCart = await cartAPI.addToCart(product.id, quantity);
         
         const convertedItems = await convertServerCartToLocal(updatedCart);
         setCartItems(convertedItems);
+        setIsOfflineMode(false);
       } catch (error) {
-        console.error('Error adding to cart:', error);
+        if (!error.message.includes('Authentication required') && 
+            !error.message.includes('Please login to perform this action') && 
+            !error.message.includes('404')) {
+          console.warn('Server unavailable, adding to local cart:', error.message);
+        }
+        setIsOfflineMode(true);
         addToLocalCart(product, quantity);
       } finally {
         setIsLoading(false);
@@ -202,7 +230,8 @@ export const CartProvider = ({ children }) => {
   }, [isAuthenticated, convertServerCartToLocal, addToLocalCart]);
 
   const removeFromCart = async (productId) => {
-    if (isAuthenticated) {
+    const userData = localStorage.getItem('userData');
+    if (isAuthenticated && userData) {
       try {
         setIsLoading(true);
         await cartAPI.removeFromCart(productId);
@@ -211,7 +240,12 @@ export const CartProvider = ({ children }) => {
         const convertedItems = await convertServerCartToLocal(serverCart);
         setCartItems(convertedItems);
       } catch (error) {
-        console.error('Error removing from cart:', error);  
+        if (!error.message.includes('Authentication required') && 
+            !error.message.includes('Please login to perform this action') && 
+            !error.message.includes('404')) {
+          console.warn('Server unavailable, removing from local cart:', error.message);
+        }
+        setIsOfflineMode(true);
         removeFromLocalCart(productId);
       } finally {
         setIsLoading(false);
@@ -231,7 +265,8 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    if (isAuthenticated) {
+    const userData = localStorage.getItem('userData');
+    if (isAuthenticated && userData) {
       try {
         setIsLoading(true);
         const updatedCart = await cartAPI.updateCartItem(productId, newQuantity);
@@ -239,7 +274,12 @@ export const CartProvider = ({ children }) => {
         const convertedItems = await convertServerCartToLocal(updatedCart);
         setCartItems(convertedItems);
       } catch (error) {
-        console.error('Error updating cart quantity:', error);
+        if (!error.message.includes('Authentication required') && 
+            !error.message.includes('Please login to perform this action') && 
+            !error.message.includes('404')) {
+          console.warn('Server unavailable, updating local cart:', error.message);
+        }
+        setIsOfflineMode(true);
         updateLocalQuantity(productId, newQuantity);
       } finally {
         setIsLoading(false);
@@ -260,13 +300,19 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
-    if (isAuthenticated) {
+    const userData = localStorage.getItem('userData');
+    if (isAuthenticated && userData) {
       try {
         setIsLoading(true);
         await cartAPI.clearCart();
         setCartItems([]);
       } catch (error) {
-        console.error('Error clearing cart:', error);
+        if (!error.message.includes('Authentication required') && 
+            !error.message.includes('Please login to perform this action') && 
+            !error.message.includes('404')) {
+          console.warn('Server unavailable, clearing local cart:', error.message);
+        }
+        setIsOfflineMode(true);
         setCartItems([]);
       } finally {
         setIsLoading(false);
@@ -300,6 +346,7 @@ export const CartProvider = ({ children }) => {
     cartItems,
     isLoading,
     isAuthenticated,
+    isOfflineMode,
     addToCart,
     removeFromCart,
     updateQuantity,

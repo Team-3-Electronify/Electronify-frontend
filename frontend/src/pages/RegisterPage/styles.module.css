@@ -45,6 +45,13 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   box-sizing: border-box;
+  background-color: white;
+}
+
+.form-group input:-webkit-autofill {
+  background-color: white !important;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #333 !important;
 }
 
 .button {
@@ -163,6 +170,13 @@
   border-radius: 4px;
   font-size: 1rem;
   box-sizing: border-box;
+  background-color: white;
+}
+
+.formGroup input:-webkit-autofill {
+  background-color: white !important;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #333 !important;
 }
 
 .formGroup input:focus {

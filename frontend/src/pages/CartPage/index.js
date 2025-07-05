@@ -10,7 +10,8 @@ const CartPage = () => {
     removeFromCart, 
     updateQuantity, 
     clearCart, 
-    getCartStats 
+    getCartStats,
+    isOfflineMode 
   } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -37,7 +38,6 @@ const CartPage = () => {
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
-
       sessionStorage.setItem('redirectAfterLogin', '/cart');
       navigate('/login');
       return;
@@ -71,6 +71,12 @@ const CartPage = () => {
     <div className={styles.container}>
       <h1>Your Cart</h1>
       
+      {isOfflineMode && (
+        <div className={styles.offlineNotice}>
+          <p>⚠️ Working in offline mode - cart data is stored locally</p>
+        </div>
+      )}
+      
       <div className={styles.cartContent}>
         <div className={styles.cartItems}>
           {cartItems.map(item => (
@@ -84,7 +90,7 @@ const CartPage = () => {
               <div className={styles.itemDetails}>
                 <h3 className={styles.itemName}>{item.name}</h3>
                 <p className={styles.itemCategory}>{item.category?.name}</p>
-                <p className={styles.itemPrice}>${item.price.toFixed(2)}</p>
+                <p className={styles.itemPrice}>€{item.price.toFixed(2)}</p>
               </div>
               
               <div className={styles.itemControls}>
@@ -112,7 +118,7 @@ const CartPage = () => {
                 </div>
                 
                 <p className={styles.itemTotal}>
-                  ${(item.price * item.quantity).toFixed(2)}
+                  €{(item.price * item.quantity).toFixed(2)}
                 </p>
                 
                 <button 
@@ -131,7 +137,7 @@ const CartPage = () => {
           
           <div className={styles.summaryRow}>
             <span>Items ({totalItems}):</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>€{totalPrice.toFixed(2)}</span>
           </div>
           
           <div className={styles.summaryRow}>
@@ -139,14 +145,9 @@ const CartPage = () => {
             <span>Free</span>
           </div>
           
-          <div className={styles.summaryRow}>
-            <span>Tax:</span>
-            <span>${(totalPrice * 0.1).toFixed(2)}</span>
-          </div>
-          
           <div className={styles.summaryTotal}>
             <span>Total:</span>
-            <span>${(totalPrice + totalPrice * 0.1).toFixed(2)}</span>
+            <span>€{totalPrice.toFixed(2)}</span>
           </div>
           
           {!isAuthenticated && (
