@@ -45,7 +45,7 @@ export const CartProvider = ({ children }) => {
     };
   }, []);
 
-  // Removed server cart functions since cart API is not implemented
+
 
   useEffect(() => {
     const loadLocalCart = () => {
@@ -62,12 +62,10 @@ export const CartProvider = ({ children }) => {
       }
     };
     
-    // Always load from local storage since cart API is not implemented
     loadLocalCart();
   }, []);
 
   useEffect(() => {
-    // Always save to localStorage since cart API is not implemented
     try {
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
     } catch (error) {
@@ -92,12 +90,10 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   const addToCart = useCallback(async (product, quantity = 1) => {
-    // Always use local cart since cart API is not implemented
     addToLocalCart(product, quantity);
   }, [addToLocalCart]);
 
   const removeFromCart = async (productId) => {
-    // Always use local cart since cart API is not implemented
     removeFromLocalCart(productId);
   };
 
@@ -111,7 +107,6 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    // Always use local cart since cart API is not implemented
     updateLocalQuantity(productId, newQuantity);
   };
 
@@ -126,7 +121,6 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
-    // Always use local cart since cart API is not implemented
     setCartItems([]);
   };
 

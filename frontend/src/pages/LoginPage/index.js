@@ -161,7 +161,7 @@ const LoginPage = () => {
       );
       
       if (!isAuthError) {
-        console.error('❌ LoginPage: Login error:', err);
+        console.error('LoginPage: Login error:', err);
       }
       
       setError(err.message || 'Login failed. Please check your credentials.');
