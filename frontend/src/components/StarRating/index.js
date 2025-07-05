@@ -11,7 +11,6 @@ const StarRating = ({ rating }) => {
       {[...Array(fullStars)].map((_, i) => (
         <span key={`full-${i}`} className={styles.starFilled}>★</span>
       ))}
-      {/* Half star logic can be added here if you have a half-star icon */}
       {[...Array(emptyStars)].map((_, i) => (
         <span key={`empty-${i}`} className={styles.star}>★</span>
       ))}

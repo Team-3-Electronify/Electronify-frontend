@@ -16,7 +16,7 @@ const ProductCard = ({ product }) => {
           </span>
           <span className={styles.reviewCount}>({product.reviewCount || 0})</span>
         </div>
-        <p className={styles.price}>${product.price.toFixed(2)}</p>
+        <p className={styles.price}>€{product.price.toFixed(2)}</p>
         <button className={styles.button}>View Details</button>
       </div>
     </Link>
