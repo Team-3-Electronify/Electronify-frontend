@@ -249,7 +249,7 @@ export const reviewsAPI = {
       const result = await apiRequest(`/api/reviews/byProduct?productId=${encodeURIComponent(productId)}`);
       return Array.isArray(result) ? result : [];
     } catch (error) {
-      console.error('Failed to get reviews:', error);
+
       return [];
     }
   },
@@ -303,7 +303,7 @@ export const reviewsAPI = {
       return result;
       
     } catch (error) {
-      console.error('Review creation error:', error);
+
       throw error;
     }
   },
