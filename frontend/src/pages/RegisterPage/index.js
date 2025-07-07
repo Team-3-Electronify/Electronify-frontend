@@ -140,7 +140,7 @@ const RegisterPage = () => {
       const { userData, token } = extractUserAndToken(response);
 
       if (userData) {
-        await login(userData, token);
+        await login(userData, token, { username: formData.username, password: formData.password });
         
         if (fromState?.from && fromState.from !== '/register') {
           navigate(fromState.from, { replace: true });
@@ -157,7 +157,7 @@ const RegisterPage = () => {
           const { userData: loginUserData, token: loginToken } = extractUserAndToken(loginResponse);
 
           if (loginUserData) {
-            await login(loginUserData, loginToken);
+            await login(loginUserData, loginToken, { username: formData.username, password: formData.password });
             
             if (fromState?.from && fromState.from !== '/register') {
               navigate(fromState.from, { replace: true });
