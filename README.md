@@ -15,7 +15,6 @@ A modern e-commerce platform specializing in electronics and technology products
 
 ### User Experience
 
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Real-time Cart Updates**: Live cart counter and instant feedback
 - **Offline Support**: Fallback to local data when API is unavailable
 - **Intuitive Navigation**: Clean header with logo, navigation, and cart access
@@ -33,7 +32,7 @@ A modern e-commerce platform specializing in electronics and technology products
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19.1.0, React Router DOM 7.6.2
-- **Styling**: CSS Modules, responsive design
+- **Styling**: CSS Modules
 - **State Management**: React Context API
 - **Build Tool**: Create React App
 - **Backend**: REST API (localhost:8080)
