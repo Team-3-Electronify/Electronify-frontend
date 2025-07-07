@@ -1,0 +1,244 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.productDetail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.infoContainer {
+  text-align: left;
+}
+
+.name {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.category {
+  font-size: 1.1rem;
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.rating {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ratingValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-left: 0.25rem;
+}
+
+.reviewCount {
+  color: #555;
+}
+
+.description {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  color: #666;
+  font-size: 1rem;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1.1rem;
+}
+
+.button:hover {
+  background-color: var(--border-color);
+}
+
+.cartButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1.1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cartButton:hover {
+  background-color: #218838;
+}
+
+.cartSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cartInfo {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.successMessage {
+  color: #28a745;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reviewsSection {
+  text-align: left;
+}
+
+.reviewList {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.reviewItem {
+  border-top: 1px solid var(--border-color);
+  padding: 1.5rem 0;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  text-align: center;
+}
+
+.loadingContainer p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.errorContainer p {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #e74c3c;
+  font-style: italic;
+}
+
+.submitError {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.submitSuccess {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.submittingIndicator {
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.loginPrompt {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.loginPrompt a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 0.25rem;
+}
+
+.loginPrompt a:hover {
+  text-decoration: underline;
+}

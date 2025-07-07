@@ -1,0 +1,145 @@
+.header {
+  background-color: var(--primary-color);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-box-shadow: 0px 4px 10px 3px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 0px 4px 10px 3px rgba(34, 60, 80, 0.2);
+  box-shadow: 0px 4px 10px 3px rgba(34, 60, 80, 0.2);
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+}
+
+.logo a {
+  text-decoration: none;
+  color: var(--secondary-text-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.logo a:hover,
+.logo a:focus {
+  color: var(--secondary-color);
+  transform: scale(1.05);
+}
+
+.nav {
+  font-size: 1.2rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav a {
+  color: var(--secondary-text-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome {
+  color: var(--secondary-text-color);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.logoutButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+  background-color: #c82333;
+}
+
+.authLinks {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.cartLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cartIcon {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s ease;
+}
+
+.cartIcon:hover {
+  transform: scale(1.1);
+}
+
+.cartText {
+  font-size: 1.5rem;
+  color: var(--secondary-text-color);
+  transition: transform 0.2s ease;
+}
+
+.cartText:hover {
+  transform: scale(1.1);
+}
+
+.cartBadge {
+  background-color: #dc3545;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0.2rem 0.2rem;
+  border-radius: 30px;
+  min-width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  animation: bounce 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}

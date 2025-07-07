@@ -1,0 +1,23 @@
+.priceFilter {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.priceFilter h4 {
+  margin-bottom: 0.5rem;
+}
+
+.radioGroup {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.radioGroup label {
+  cursor: pointer;
+}
+
+.radioGroup input {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}

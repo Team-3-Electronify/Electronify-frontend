@@ -1,0 +1,17 @@
+.sortContainer {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.sortContainer h4 {
+  margin-bottom: 0.5rem;
+}
+
+.sortSelect {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: white;
+}
